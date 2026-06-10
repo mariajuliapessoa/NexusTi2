@@ -9,12 +9,19 @@ import ServicosPage from './pages/ServicosPage';
 import CadastroServicoPage from './pages/CadastroServicoPage';
 
 export default function App() {
-  const { usuario, login, logout } = useAuth();
+  const { usuario, login, logout, restaurando } = useAuth();
   const [page, setPage] = React.useState('home');
+
+  if (restaurando) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <span style={{ color: 'var(--cor-texto-suave)' }}>Carregando…</span>
+      </div>
+    );
+  }
 
   function navigate(p) {
     setPage(p);
-    window.scrollTo(0, 0);
   }
 
   function handleLogin(dados) {
@@ -27,7 +34,8 @@ export default function App() {
     navigate('home');
   }
 
-  const showHeader = page !== 'login' && page !== 'cadastro' && page !== 'troca-senha' && page !== 'cadastro-servico';
+  const showHeader = page !== 'login' && page !== 'cadastro' && page !== 'troca-senha' &&
+    page !== 'cadastro-servico';
 
   return (
     <>
@@ -39,7 +47,6 @@ export default function App() {
           onNavigate={navigate}
         />
       )}
-
       {page === 'home' && <HomePage onNavigate={navigate} />}
       {page === 'login' && <LoginPage onLogin={handleLogin} onNavigate={navigate} />}
       {page === 'cadastro' && <CadastroPage onLogin={handleLogin} onNavigate={navigate} />}

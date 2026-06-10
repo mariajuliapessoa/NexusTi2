@@ -18,4 +18,5 @@ export const api = {
   cadastrarServico: (dados) => req('POST', '/servicos', dados),
   getSolicitacoes: (login) => req('GET', `/solicitacoes/${login}`),
   atualizarSolicitacoes: (login, solicitacoes) => req('PUT', `/solicitacoes/${login}`, { solicitacoes }),
+  getCliente: (login) => req('GET', `/clientes/${login}`),
 };

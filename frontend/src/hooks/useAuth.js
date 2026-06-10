@@ -1,27 +1,40 @@
-import { useState, useCallback } from 'react';
-
-const STORAGE_KEY = 'nexus_usuario';
-
-function getStored() {
-  try {
-    const d = localStorage.getItem(STORAGE_KEY);
-    return d ? JSON.parse(d) : null;
-  } catch { return null; }
-}
+import { useState, useCallback, useEffect } from 'react';
+import { api } from '../services/api';
 
 export function useAuth() {
-  const [usuario, setUsuario] = useState(() => getStored());
+  const [usuario, setUsuario] = useState(null);
+  const [restaurando, setRestaurando] = useState(true);
+
+  useEffect(() => {
+    const loginSalvo = window.location.hash.replace('#', '');
+    if (!loginSalvo) {
+      setRestaurando(false);
+      return;
+    }
+    
+    api.getCliente(loginSalvo)
+      .then(res => {
+        if (res.sucesso) {
+          setUsuario({ ...res.cliente, logado: true });
+        } else {
+          window.location.hash = '';
+        }
+      })
+      .catch(() => {
+        window.location.hash = '';
+      })
+      .finally(() => setRestaurando(false));
+  }, []);
 
   const login = useCallback((dados) => {
-    const u = { ...dados, logado: true };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
-    setUsuario(u);
+    window.location.hash = dados.login || dados.email || '';
+    setUsuario({ ...dados, logado: true });
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    window.location.hash = '';
     setUsuario(null);
   }, []);
 
-  return { usuario, login, logout, estaLogado: !!usuario?.logado };
+  return { usuario, login, logout, estaLogado: !!usuario?.logado, restaurando };
 }

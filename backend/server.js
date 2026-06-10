@@ -236,6 +236,36 @@ initDB().then(save => {
     }
   });
 
+  app.get('/api/clientes/:login', (req, res) => {
+  try {
+    const { login } = req.params;
+    const cliente = queryOne(
+      'SELECT login, nome, email, cpf, nascimento, telefone, estado_civil, escolaridade FROM cliente WHERE login = ?',
+      [login]
+    );
+    if (!cliente) return res.json({ sucesso: false, mensagem: 'Cliente não encontrado.' });
+    res.json({ sucesso: true, cliente });
+  } catch (e) {
+    res.status(500).json({ sucesso: false, mensagem: e.message });
+  }
+});
+
+
+
   const PORT = 3001;
   app.listen(PORT, () => console.log(`Nexus TI Backend rodando na porta ${PORT}`));
+});
+
+app.get('/api/clientes/:login', (req, res) => {
+  try {
+    const { login } = req.params;
+    const cliente = queryOne(
+      'SELECT login, nome, email, cpf, nascimento, telefone, estado_civil, escolaridade FROM cliente WHERE login = ?',
+      [login]
+    );
+    if (!cliente) return res.json({ sucesso: false, mensagem: 'Cliente não encontrado.' });
+    res.json({ sucesso: true, cliente });
+  } catch (e) {
+    res.status(500).json({ sucesso: false, mensagem: e.message });
+  }
 });
